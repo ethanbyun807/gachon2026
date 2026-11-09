@@ -1,2 +1,4 @@
-# DOKIDOKI C언어 심화
+# HALLO ICH BIN JAEMIN
 어서와라 반도체는 처음이지?
+
+# SESSION 1 : HELLGATE
