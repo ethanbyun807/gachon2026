@@ -2,3 +2,4 @@
 어서와라 반도체는 처음이지?
 
 # SESSION 1 : HELLGATE
+# SESSION 2 : Orientation
