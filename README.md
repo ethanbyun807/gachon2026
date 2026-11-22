@@ -34,33 +34,35 @@
 
 ## 3. 반도체 설계 흐름
 
-디지털 칩은 대략 **명세(Spec) → RTL 설계 → 검증 → 합성 → 물리 설계 → 사인오프 → GDSII** 순서로 진행되며, 각 단계마다 EDA 도구가 쓰인다.
+디지털 칩은 대략 **명세(Spec) → RTL 설계 → RTL 검증 → PI → PD → Sign-off → Tape-out** 순서로 진행되며, 각 단계마다 EDA 도구가 쓰인다.
 
 ```
-명세(Spec) : "어떤 건물을 지을지" 정하기
+명세(Spec)         "어떤 칩을 만들지" 정하는 것
    ↓
-RTL 설계           Verilog / SystemVerilog / VHDL
+RTL 설계            Verilog / SystemVerilog / VHDL
    ↓
-RTL 검증           시뮬레이션, 형식 검증(Formal), 에뮬레이션
+RTL 검증            시뮬레이션, 형식 검증(Formal), 에뮬레이션
    ↓
-논리 합성           RTL → 게이트 레벨 넷리스트 (+ DFT 삽입)
+  PI               RTL → 게이트 레벨 넷리스트 (+ DFT 삽입)
    ↓                → 합성 직후 STA로 타이밍 1차 확인
    ↓                → LEC로 RTL과 넷리스트의 논리 동등성 확인
-물리 설계           Floorplan → Placement → CTS → Routing
+  PD               Floorplan → Placement → CTS → Routing
    ↓                → 각 단계 후 STA 반복 (타이밍 위반 수정, 최적화)
-사인오프            최종 STA·전력·기생 성분 추출·DRC/LVS
-   ↓
-GDSII/OASIS        최종 레이아웃 파일(GDSII 또는 OASIS) 출력
-   ↓
-Tape-out           최종 파일을 파운드리에 제출 → 마스크·웨이퍼 제작 시작
+   ↓                → 마무리 후 레이아웃 파일(GDSII 또는 OASIS) 출력
+Sign-off           최종 STA·전력·기생 성분 추출, 출력된 레이아웃으로 DRC/LVS
+   ↓                → 위반 시 ECO(부분 수정) 후 재출력, 모두 통과할 때까지 반복
+Tape-out            최종 파일을 파운드리에 제출 → 마스크·웨이퍼 제작 시작
 ```
 
 | 단계 | 하는 일 |
 |---|---|
 | RTL 설계·검증 | 레지스터 간 동작을 코드로 기술하고, 수많은 시나리오로 동작 확인 |
-| 논리 합성 | RTL을 논리 게이트 넷리스트로 변환, 테스트 회로(DFT) 삽입. 합성 후 STA로 타이밍을 처음 확인하고, LEC로 RTL과 넷리스트가 논리적으로 같은지 검증 |
-| 배치·배선(P&R) | 수십억 개 게이트의 위치를 정하고 금속 배선을 연결 (타이밍·전력·면적 만족). 배치, CTS, 배선 단계마다 STA를 반복하며 최적화 |
-| 사인오프 | 실제 배선 정보를 반영한 최종 STA와 전력, 물리 규칙(DRC/LVS)을 검증 |
+| PI(Physical Implementation) | RTL을 논리 게이트 넷리스트로 변환, 테스트 회로(DFT) 삽입. 합성 후 STA로 타이밍을 처음 확인하고, LEC로 RTL과 넷리스트가 논리적으로 같은지 검증 |
+| PD(Physical Design) | 수십억 개 게이트의 위치를 정하고 금속 배선을 연결 (타이밍·전력·면적 만족). 배치, CTS, 배선 단계마다 STA를 반복하며 최적화하고, 마무리 후 레이아웃 파일(GDSII 또는 OASIS)을 출력 |
+| Sign-off | 실제 배선 정보를 반영한 최종 STA와 전력, 출력된 레이아웃 기준의 물리 규칙(DRC/LVS)을 검증. 위반이 나오면 ECO 후 재출력해 반복 |
+| Tape-out | 사인오프를 통과한 최종 GDSII를 파운드리에 제출. 이후 마스크·웨이퍼 제작이 시작되므로 되돌리기 어려움 |
+
+> ECO : 이미 거의 완성된 설계를 처음부터 다시 하는 것이 아니라 필요한 부분만 최소한으로 고치는 수정 방식이다. 대표적인 종류로는 Timing ECO, Logical ECO, Physical Verification ECO 등이 있다.
 
 ## 4. 주요 기업과 시장
 
@@ -74,7 +76,7 @@ Tape-out           최종 파일을 파운드리에 제출 → 마스크·웨이
 
 ### 시장 규모
 
-- 조사기관별 2025년 EDA 소프트웨어 시장 추정: 약 130억 ~ 200억 달러대
+- 조사기관별 2025년 EDA 시장 규모 추정치는 크게 다르다. IMARC는 약 131억 달러, Fortune Business Insights는 약 196.5억 달러로 추정한다.
 - 10년 이상 매년 성장을 이어 온 안정적인 산업으로 평가됨
 
 ## 5. AI와 반도체 설계 자동화
@@ -88,9 +90,7 @@ Tape-out           최종 파일을 파운드리에 제출 → 마스크·웨이
 | 에이전틱 AI | AI가 도구를 직접 호출해 설계 흐름의 일부를 수행 | Cadence ChipStack, Synopsys AgentEngineer·AutoPilot, Siemens Fuse EDA AI Agent |
 | 완전 자율 설계 | 사람은 의도만 정의, AI가 전체 흐름 수행 | 아직 연구·비전 단계 |
 
-### 핵심 포인트
-
-지금은 세 번째 단계가 막 시작된 시점이다. 다만 LLM 기반 에이전트가 사람 개입 없이 실제 산업용 칩을 끝까지 설계해 테이프아웃한 사례는 아직 없다는 점, 남은 과제로 환각(Hallucination), 학습 데이터 부족, 설계 IP 보안 등이 있을 것이다. 
+지금은 세 번째 단계가 막 시작된 시점이다. 다만 LLM 기반 에이전트가 사람 개입 없이 실제 산업용 칩을 끝까지 설계해 테이프아웃한 사례는 아직 보고 되지 않았고, 남은 과제로는 환각(Hallucination), 학습 데이터 부족, 설계 IP 보안 등이 있다. 
 
 ## 6. 오픈소스 EDA
 
@@ -117,6 +117,7 @@ Tape-out           최종 파일을 파운드리에 제출 → 마스크·웨이
 - [The state of agentic AI in chip design tools in 2026 - Tom's Hardware](https://www.tomshardware.com/tech-industry/semiconductors/the-state-of-agentic-ai-in-chip-design-tools-in-2026-cadence-synopsys-and-siemens-all-pitch-autonomous-engineers)
 - [The Dawn of Agentic EDA: A Survey of Autonomous Digital Chip Design - arXiv:2512.23189](https://arxiv.org/abs/2512.23189)
 - [Self-verifying EDA AI agents - Siemens](https://blogs.sw.siemens.com/cicv/2026/07/29/self-verifying-eda-ai-agents/)
-- [Inside the EDA growth story and AI impact - SEMI](https://www.semi.org/en/blogs/inside-the-eda-growth-story-and-ai-impact-a-chat-with-jay-vleeschhouwer-of-griffin-securities)
 - [The OpenROAD Project - GitHub](https://github.com/The-OpenROAD-Project/OpenROAD)
 - [Toward an Open-Source Digital Flow: First Learnings from the OpenROAD Project](https://par.nsf.gov/servlets/purl/10171025)
+- [Electronic Design Automation Market Report - IMARC](https://www.giikorea.co.kr/report/imarc2049282-electronic-design-automation-market-report-by.html)
+- [Electronic Design Automation Market - Fortune Business Insights](https://www.fortunebusinessinsights.com/ko/electronic-design-automation-market-117148)
