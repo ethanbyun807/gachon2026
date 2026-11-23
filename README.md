@@ -1,3 +1,13 @@
+# Semiconductor Design Environment 🤖
+* 반도체 개발에 필요한 환경과 자동화를 연구하는 프로젝트
+
+## Table of Contents 📜
+* 0_DOCS
+* 1_LINUX
+* 2_TCL
+* 3_MAKEFILE
+
+
 # 반도체 설계 자동화 (Semiconductor Design Automation)
 
 > 202633475 변재민 (Ethan Byun)
